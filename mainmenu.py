@@ -3,12 +3,13 @@ import os
 pygame.font.init()
 pygame.mixer.init()
 
+VEL = 5
+BULLET_VEL = 7
+MAX_BULLETS = 3
+MAX_HEALTH = 10
 
 HEALTH_FONT =  pygame.font.SysFont('comicsans', 40)
 WINNER_FONT =  pygame.font.SysFont('comicsans', 40)
-
-HIT_SOUND = pygame.mixer.Sound(os.path.join('Assets','Grenade+1.mp3'))
-FIRE_SOUND =pygame.mixer.Sound(os.path.join('Assets','Gun+Silencer.mp3'))
 
 WIDTH, HEIGHT = 900,500
 WHITE = (255, 255, 255)
@@ -16,12 +17,12 @@ YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
 FPS = 60
-VEL = 5
-BULLET_VEL = 7
-MAX_BULLETS = 3
 
 YELLOW_HIT = pygame.USEREVENT + 1
 RED_HIT = pygame.USEREVENT + 2
+
+HIT_SOUND = pygame.mixer.Sound(os.path.join('Assets','Grenade+1.mp3'))
+FIRE_SOUND =pygame.mixer.Sound(os.path.join('Assets','Gun+Silencer.mp3'))
 
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 50,40
 BORDER = pygame.Rect(WIDTH//2-5,0, 10,HEIGHT)
@@ -123,7 +124,7 @@ def maimmenu():
                 main()
         if button_2.collidepoint(mx,my):
             if click:
-                pass
+                options()
         if button_3.collidepoint(mx,my):
             if click:
                 pygame.quit()
@@ -138,15 +139,23 @@ def maimmenu():
         click = False
         clock.tick(FPS)
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+                    pygame.quit()
+                
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
 
             if event.type == pygame.QUIT:
                 run = False
-                pygame.quit()
+                
         pygame.display.update()
-()
+    pygame.quit()
 
 def draw_menu():
     WIN.blit(SPACE,(0,0))
@@ -156,14 +165,35 @@ def draw_menu():
     pygame.display.update()
 
 
+def options():
+    WIN.blit(SPACE_BLUR,(0,0))
+    run = True
+    click = False
+    while run:
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+            
+            if event.type == pygame.KEYDOWN:
+                
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+                    pygame.quit()
+                
+                if event.key == pygame.K_BACKSPACE:
+                    run = False
+                    maimmenu()
+        pygame.display.update()
 
 def main():
     red = pygame.Rect(850, 250, SPACESHIP_WIDTH,SPACESHIP_HEIGHT)
     yellow = pygame.Rect(0, 250, SPACESHIP_WIDTH,SPACESHIP_HEIGHT)
     red_bullets = []
     yellow_bullets = []
-    red_health = 10
-    yellow_health = 10
+    red_health = MAX_HEALTH
+    yellow_health = MAX_HEALTH
     clock = pygame.time.Clock()
     run = True
     while run:
@@ -174,8 +204,17 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
-
+            
             if event.type == pygame.KEYDOWN:
+                
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+                    pygame.quit()
+                
+                if event.key == pygame.K_BACKSPACE:
+                    run = False
+                    maimmenu()
+                
                 if event.key == pygame.K_LCTRL and len(yellow_bullets)<MAX_BULLETS:
                     bullet = pygame.Rect(yellow.x + yellow.width, yellow.y + yellow.height//2 -2,10,5)
                     yellow_bullets.append(bullet)
@@ -186,7 +225,6 @@ def main():
                     red_bullets.append(bullet)
                     #FIRE_SOUND.play()
 
-            
             if event.type == RED_HIT:
                 red_health -= 1
                 #HIT_SOUND.play()
@@ -194,7 +232,6 @@ def main():
             if event.type == YELLOW_HIT:
                 yellow_health -= 1
                 #HIT_SOUND.play()
-
 
         winner = ""
         if red_health <=0:
