@@ -3,6 +3,7 @@ import os
 pygame.font.init()
 pygame.mixer.init()
 
+#setting the default parameters
 VEL = 5
 BULLET_VEL = 7
 MAX_BULLETS = 3
@@ -12,6 +13,7 @@ HEALTH_FONT =  pygame.font.SysFont('comicsans', 40)
 WINNER_FONT =  pygame.font.SysFont('comicsans', 40)
 
 WIDTH, HEIGHT = 900,500
+SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 50,40
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
@@ -24,7 +26,6 @@ RED_HIT = pygame.USEREVENT + 2
 HIT_SOUND = pygame.mixer.Sound(os.path.join('Assets','Grenade+1.mp3'))
 FIRE_SOUND =pygame.mixer.Sound(os.path.join('Assets','Gun+Silencer.mp3'))
 
-SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 50,40
 BORDER = pygame.Rect(WIDTH//2-5,0, 10,HEIGHT)
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("first Game!")
@@ -109,15 +110,14 @@ def maimmenu():
     clock = pygame.time.Clock()
     run = True
     click = False
+    start_text = WINNER_FONT.render("Start", 1, WHITE)
+    options_text = WINNER_FONT.render("Options", 1, WHITE)
+    quit_text = WINNER_FONT.render("Quit", 1, WHITE)
+    button_1 = pygame.Rect(WIDTH//2-100, 100, 200, 50)
+    button_2 = pygame.Rect(WIDTH//2-100, 200, 200, 50)
+    button_3 = pygame.Rect(WIDTH//2-100, 400, 200, 50)
     while run:
         mx, my = pygame.mouse.get_pos()
-        start_text = WINNER_FONT.render("Start", 1, WHITE)
-        options_text = WINNER_FONT.render("Options", 1, WHITE)
-        quit_text = WINNER_FONT.render("Quit", 1, WHITE)
-
-        button_1 = pygame.Rect(WIDTH//2-100, 100, 200, 50)
-        button_2 = pygame.Rect(WIDTH//2-100, 200, 200, 50)
-        button_3 = pygame.Rect(WIDTH//2-100, 400, 200, 50)
 
         if button_1.collidepoint(mx,my):
             if click:
@@ -169,22 +169,51 @@ def options():
     WIN.blit(SPACE_BLUR,(0,0))
     run = True
     click = False
+    health_text = WINNER_FONT.render("Health", 1, WHITE)
+    max_bullets_text = WINNER_FONT.render("Max Bullets", 1, WHITE)
+    player_speed_text = WINNER_FONT.render("Player speed", 1, WHITE)
+    bullet_speed_text = WINNER_FONT.render("Bullet speed", 1, WHITE)
+    mainmenu_text = WINNER_FONT.render("Main Menu", 1, WHITE)
+
+    button_1 = pygame.Rect(100, 100, WIDTH-200, 50)
+    button_2 = pygame.Rect(100, 170, WIDTH-200, 50)
+    button_3 = pygame.Rect(100, 240, WIDTH-200, 50)
+    button_4 = pygame.Rect(100, 310, WIDTH-200, 50)
+    button_5 = pygame.Rect(WIDTH//2-100, 410, 200, 50)
+
     while run:
+        pygame.draw.rect(WIN, BLACK,button_1)
+        pygame.draw.rect(WIN, BLACK,button_2)
+        pygame.draw.rect(WIN, BLACK,button_3)
+        pygame.draw.rect(WIN, BLACK,button_4)
+        pygame.draw.rect(WIN, BLACK,button_5)
+
+        WIN.blit(health_text, (110, 112))
+        WIN.blit(max_bullets_text, (110, 182))
+        WIN.blit(player_speed_text, (110, 252))
+        WIN.blit(bullet_speed_text, (110, 322))
+        WIN.blit(mainmenu_text, (WIDTH//2 - mainmenu_text.get_width()//2, 422))
+        mx, my = pygame.mouse.get_pos()
+
+        if button_5.collidepoint(mx,my):
+            if click:
+                maimmenu()
+
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
                 run = False
-                pygame.quit()
-            
-            if event.type == pygame.KEYDOWN:
-                
+                pygame.quit()           
+            if event.type == pygame.KEYDOWN:                
                 if event.key == pygame.K_ESCAPE:
                     run = False
-                    pygame.quit()
-                
+                    pygame.quit()                
                 if event.key == pygame.K_BACKSPACE:
                     run = False
                     maimmenu()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
         pygame.display.update()
 
 def main():
