@@ -8,15 +8,16 @@ VEL = 5
 BULLET_VEL = 7
 MAX_BULLETS = 3
 MAX_HEALTH = 10
-
-HEALTH_FONT =  pygame.font.SysFont('comicsans', 40)
-WINNER_FONT =  pygame.font.SysFont('comicsans', 40)
+FONT_SIZE = 40
+HEALTH_FONT =  pygame.font.SysFont('comicsans', FONT_SIZE)
+WINNER_FONT =  pygame.font.SysFont('comicsans', FONT_SIZE)
 
 WIDTH, HEIGHT = 900,500
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 50,40
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 FPS = 60
 
@@ -113,25 +114,25 @@ def maimmenu():
     start_text = WINNER_FONT.render("Start", 1, WHITE)
     options_text = WINNER_FONT.render("Options", 1, WHITE)
     quit_text = WINNER_FONT.render("Quit", 1, WHITE)
-    button_1 = pygame.Rect(WIDTH//2-100, 100, 200, 50)
-    button_2 = pygame.Rect(WIDTH//2-100, 200, 200, 50)
-    button_3 = pygame.Rect(WIDTH//2-100, 400, 200, 50)
+    start_button = pygame.Rect(WIDTH//2-100, 100, 200, 50)
+    options_button = pygame.Rect(WIDTH//2-100, 200, 200, 50)
+    quit_button = pygame.Rect(WIDTH//2-100, 400, 200, 50)
     while run:
         mx, my = pygame.mouse.get_pos()
 
-        if button_1.collidepoint(mx,my):
+        if start_button.collidepoint(mx,my):
             if click:
                 main()
-        if button_2.collidepoint(mx,my):
+        if options_button.collidepoint(mx,my):
             if click:
                 options()
-        if button_3.collidepoint(mx,my):
+        if quit_button.collidepoint(mx,my):
             if click:
                 pygame.quit()
 
-        pygame.draw.rect(WIN, BLACK,button_1)
-        pygame.draw.rect(WIN, BLACK,button_2)
-        pygame.draw.rect(WIN, BLACK,button_3)
+        pygame.draw.rect(WIN, BLACK,start_button)
+        pygame.draw.rect(WIN, BLACK,options_button)
+        pygame.draw.rect(WIN, BLACK,quit_button)
         WIN.blit(start_text, (WIDTH//2 - start_text.get_width()//2, 112))
         WIN.blit(options_text, (WIDTH//2 - options_text.get_width()//2, 212))
         WIN.blit(quit_text, (WIDTH//2 - quit_text.get_width()//2, 412))
@@ -166,39 +167,91 @@ def draw_menu():
 
 
 def options():
+    global MAX_HEALTH, BULLET_VEL, MAX_BULLETS,VEL
     WIN.blit(SPACE_BLUR,(0,0))
     run = True
     click = False
-    health_text = WINNER_FONT.render("Health", 1, WHITE)
-    max_bullets_text = WINNER_FONT.render("Max Bullets", 1, WHITE)
-    player_speed_text = WINNER_FONT.render("Player speed", 1, WHITE)
-    bullet_speed_text = WINNER_FONT.render("Bullet speed", 1, WHITE)
-    mainmenu_text = WINNER_FONT.render("Main Menu", 1, WHITE)
+    buttons = {}
+    texts = {}
+    main_buttons = {}
+    texts["Health"] = WINNER_FONT.render("Health", 1, WHITE), (110, 112)
+    texts["max bullets"] = WINNER_FONT.render("Max Bullets", 1, WHITE) , (110, 182)
+    texts["player speed"] = WINNER_FONT.render("Player speed", 1, WHITE), (110, 252)
+    texts["bullet speed"] = WINNER_FONT.render("Bullet speed", 1, WHITE), (110, 322)
+    VALUE_POS = WIDTH-370
+    texts["Health value"] = WINNER_FONT.render(str(MAX_HEALTH), 1, WHITE), (VALUE_POS, 112)
+    texts["max bullets value"] = WINNER_FONT.render(str(MAX_BULLETS), 1, WHITE) , (VALUE_POS, 182)
+    texts["player speed value"] = WINNER_FONT.render(str(VEL), 1, WHITE), (VALUE_POS, 252)
+    texts["bullet speed value"] = WINNER_FONT.render(str(BULLET_VEL), 1, WHITE), (VALUE_POS, 322)
 
-    button_1 = pygame.Rect(100, 100, WIDTH-200, 50)
-    button_2 = pygame.Rect(100, 170, WIDTH-200, 50)
-    button_3 = pygame.Rect(100, 240, WIDTH-200, 50)
-    button_4 = pygame.Rect(100, 310, WIDTH-200, 50)
-    button_5 = pygame.Rect(WIDTH//2-100, 410, 200, 50)
+    texts["mainmenu"] = WINNER_FONT.render("Main Menu", 1, WHITE), (WIDTH//2 - (len("Main Menu")*FONT_SIZE//2)//2, 422)
+    MAIN_POS = WIDTH-200
+    main_buttons["Health"] = pygame.Rect(100, 100,MAIN_POS, 50) # health
+    main_buttons["max bullets"] = pygame.Rect(100, 170, MAIN_POS, 50) # max_bullets
+    main_buttons["player speed"] = pygame.Rect(100, 240, MAIN_POS, 50) # player_speed
+    main_buttons["bullet speed"] = pygame.Rect(100, 310, MAIN_POS, 50) # bullet_speed  
+    main_buttons["mainmenu"] = pygame.Rect(WIDTH//2-100, 410, 200, 50) # mainmenu
+    BUTTON_POS = WIDTH-140
+    buttons["Health sub"] = YELLOW , pygame.Rect(300, 110, 30, 30)  # health
+    buttons["Health add"] = GREEN, pygame.Rect(BUTTON_POS, 110, 30, 30)  # health
+
+    buttons["max bullets sub"] = RED , pygame.Rect(300, 180, 30, 30) # max_bullets
+    buttons["max bullets add"] = GREEN , pygame.Rect(BUTTON_POS, 180,  30, 30) # max_bullets
+
+    buttons["player speed sub"] = RED , pygame.Rect(300, 250,  30, 30) # player_speed
+    buttons["player speed add"] =  GREEN, pygame.Rect(BUTTON_POS, 250,  30, 30) # player_speed
+
+    buttons["bullet speed sub"] = RED , pygame.Rect(300, 320,  30, 30) # bullet_speed
+    buttons["bullet speed add"] =  GREEN, pygame.Rect(BUTTON_POS, 320,  30, 30)# bullet_speed 
+
 
     while run:
-        pygame.draw.rect(WIN, BLACK,button_1)
-        pygame.draw.rect(WIN, BLACK,button_2)
-        pygame.draw.rect(WIN, BLACK,button_3)
-        pygame.draw.rect(WIN, BLACK,button_4)
-        pygame.draw.rect(WIN, BLACK,button_5)
-
-        WIN.blit(health_text, (110, 112))
-        WIN.blit(max_bullets_text, (110, 182))
-        WIN.blit(player_speed_text, (110, 252))
-        WIN.blit(bullet_speed_text, (110, 322))
-        WIN.blit(mainmenu_text, (WIDTH//2 - mainmenu_text.get_width()//2, 422))
         mx, my = pygame.mouse.get_pos()
+        for button in main_buttons:
+            pygame.draw.rect(WIN, BLACK, main_buttons[button])
+ 
+        for button in buttons:
+            pygame.draw.rect(WIN, buttons[button][0], buttons[button][1])
 
-        if button_5.collidepoint(mx,my):
-            if click:
+        for text in texts:
+            WIN.blit(texts[text][0],texts[text][1])
+   
+        if main_buttons["mainmenu"].collidepoint(mx,my) and click:
                 maimmenu()
 
+        if buttons["Health sub"][1].collidepoint(mx,my) and click and MAX_HEALTH > 1 :
+                MAX_HEALTH -= 1
+                texts["Health value"] = WINNER_FONT.render(str(MAX_HEALTH), 1, WHITE), (VALUE_POS, 112)
+
+        if buttons["Health add"][1].collidepoint(mx,my)and click and MAX_HEALTH < 20:
+                MAX_HEALTH += 1
+                texts["Health value"] = WINNER_FONT.render(str(MAX_HEALTH), 1, WHITE), (VALUE_POS, 112)
+
+        if buttons["max bullets sub"][1].collidepoint(mx,my)and click and MAX_BULLETS > 1 :
+                MAX_BULLETS -= 1
+                texts["max bullets value"] = WINNER_FONT.render(str(MAX_BULLETS), 1, WHITE) , (VALUE_POS, 182)
+
+        if buttons["max bullets add"][1].collidepoint(mx,my)and click:
+                MAX_BULLETS += 1
+                texts["max bullets value"] = WINNER_FONT.render(str(MAX_BULLETS), 1, WHITE) , (VALUE_POS, 182)
+
+        if buttons["player speed sub"][1].collidepoint(mx,my)and click and VEL > 1:
+                VEL -= 1
+                texts["player speed value"] = WINNER_FONT.render(str(VEL), 1, WHITE), (VALUE_POS, 252)
+
+        if buttons["player speed add"][1].collidepoint(mx,my)and click and BULLET_VEL-1 > VEL:
+                VEL += 1
+                texts["player speed value"] = WINNER_FONT.render(str(VEL), 1, WHITE), (VALUE_POS, 252)
+
+        if buttons["bullet speed sub"][1].collidepoint(mx,my)and click and BULLET_VEL > VEL+1:
+                BULLET_VEL -= 1
+                texts["bullet speed value"] = WINNER_FONT.render(str(BULLET_VEL), 1, WHITE), (VALUE_POS, 322)
+
+        if buttons["bullet speed add"][1].collidepoint(mx,my)and click and BULLET_VEL < 10:
+                BULLET_VEL += 1
+                texts["bullet speed value"] = WINNER_FONT.render(str(BULLET_VEL), 1, WHITE), (VALUE_POS, 322)
+
+        click = False
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
@@ -215,7 +268,6 @@ def options():
                 if event.button == 1:
                     click = True
         pygame.display.update()
-
 def main():
     red = pygame.Rect(850, 250, SPACESHIP_WIDTH,SPACESHIP_HEIGHT)
     yellow = pygame.Rect(0, 250, SPACESHIP_WIDTH,SPACESHIP_HEIGHT)
